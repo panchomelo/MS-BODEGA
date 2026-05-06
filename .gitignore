@@ -1,0 +1,10 @@
+# Ignora todas las carpetas target sin importar en qué microservicio estén
+**/target/
+
+# Ignora archivos de configuración de IDEs
+.idea/
+.vscode/
+*.iml
+
+# Ignora archivos compilados sueltos
+*.class
