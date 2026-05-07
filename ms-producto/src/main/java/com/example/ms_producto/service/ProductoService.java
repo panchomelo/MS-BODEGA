@@ -3,6 +3,7 @@ package com.example.ms_producto.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; 
 
 import com.example.ms_producto.dto.ProductoRequestDTO;
 import com.example.ms_producto.dto.ProductoResponseDTO;
@@ -10,51 +11,74 @@ import com.example.ms_producto.model.Producto;
 import com.example.ms_producto.repository.ProductoRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j; 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductoService {
 
     private final ProductoRepository repository;
 
+    @Transactional
     public ProductoResponseDTO crear(ProductoRequestDTO dto){
+        log.info("Iniciando la creación del producto: {}", dto.getNombre());
+        
         Producto producto = Producto.builder()
                 .nombre(dto.getNombre())
                 .precio(dto.getPrecio())
                 .categoriaId(dto.getCategoriaId())
                 .build();
 
-        return mapToResponse(repository.save(producto));
+        Producto guardado = repository.save(producto);
+        log.info("Producto guardado exitosamente con ID: {}", guardado.getId());
+        
+        return mapToResponse(guardado);
     }
 
+    @Transactional(readOnly = true)
     public List<ProductoResponseDTO> listar(){
+        log.info("Recuperando lista completa de productos");
         return repository.findAll().stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public ProductoResponseDTO obtenerPorId(Long id){
+        log.info("Buscando producto con ID: {}", id);
         return mapToResponse(buscarProducto(id));
     }
 
+    @Transactional
     public ProductoResponseDTO actualizar(Long id, ProductoRequestDTO dto){
+        log.info("Actualizando datos del producto ID: {}", id);
         Producto producto = buscarProducto(id);
 
         producto.setNombre(dto.getNombre());
         producto.setPrecio(dto.getPrecio());
         producto.setCategoriaId(dto.getCategoriaId());
 
-        return mapToResponse(repository.save(producto));
+        Producto actualizado = repository.save(producto);
+        log.info("Producto ID: {} actualizado correctamente", id);
+        
+        return mapToResponse(actualizado);
     }
 
+    @Transactional
     public void eliminar(Long id){
+        log.warn("Eliminando definitivamente el producto ID: {}", id);
         Producto producto = buscarProducto(id);
         repository.delete(producto);
+        log.info("Producto ID: {} eliminado de la base de datos", id);
     }
 
     private Producto buscarProducto(Long id){
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> {
+                    log.error("Error: Producto con ID {} no encontrado", id);
+                    return new RuntimeException("Producto no encontrado");
+                });
     }
 
     private ProductoResponseDTO mapToResponse(Producto p){
