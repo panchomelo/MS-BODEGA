@@ -3,7 +3,8 @@ package com.example.ms_producto.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; 
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.example.ms_producto.dto.ProductoRequestDTO;
 import com.example.ms_producto.dto.ProductoResponseDTO;
@@ -11,7 +12,8 @@ import com.example.ms_producto.model.Producto;
 import com.example.ms_producto.repository.ProductoRepository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j; 
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductoService {
 
     private final ProductoRepository repository;
+    private final WebClient webClient;
 
     @Transactional
     public ProductoResponseDTO crear(ProductoRequestDTO dto){
         log.info("Iniciando la creación del producto: {}", dto.getNombre());
         
+        validarCategoria(dto.getCategoriaId());
+
         Producto producto = Producto.builder()
                 .nombre(dto.getNombre())
                 .precio(dto.getPrecio())
@@ -55,6 +60,8 @@ public class ProductoService {
         log.info("Actualizando datos del producto ID: {}", id);
         Producto producto = buscarProducto(id);
 
+        validarCategoria(dto.getCategoriaId());
+
         producto.setNombre(dto.getNombre());
         producto.setPrecio(dto.getPrecio());
         producto.setCategoriaId(dto.getCategoriaId());
@@ -71,6 +78,20 @@ public class ProductoService {
         Producto producto = buscarProducto(id);
         repository.delete(producto);
         log.info("Producto ID: {} eliminado de la base de datos", id);
+    }
+
+    // 4. Método privado para encapsular la llamada al microservicio de categorías
+    private void validarCategoria(Long categoriaId) {
+        log.info("Validando existencia de categoría ID: {} en ms-categoria", categoriaId);
+        webClient.get()
+                .uri("/{id}", categoriaId)
+                .retrieve()
+                .onStatus(status -> status.isError(), response -> {
+                log.error("Error: La categoría {} no existe en el sistema", categoriaId);
+                return Mono.error(new RuntimeException("Categoría no encontrada en el maestro de categorías"));
+})
+                .bodyToMono(Object.class)
+                .block();
     }
 
     private Producto buscarProducto(Long id){
