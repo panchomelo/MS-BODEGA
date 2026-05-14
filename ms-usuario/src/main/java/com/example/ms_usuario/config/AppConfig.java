@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * Clase de configuración para el microservicio de usuarios.
+ * Clase de configuración para el microservicio de usuarios..
  * Define los componentes necesarios para la comunicación entre servicios.
  */
 @Configuration
@@ -13,7 +13,7 @@ public class AppConfig {
 
     /**
      * Define el Bean de WebClient para la comunicación remota.
-     * Mantiene la consistencia con la arquitectura del sistema de bodega [1-4].
+     * Mantiene la consistencia con la arquitectura del sistema de bodegas.
      */
     @Bean
     public WebClient webClient() {
