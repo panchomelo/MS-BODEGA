@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * Clase de configuración para el microservicio de usuarios.
+ * Clase de configuración para el microservicio de usuarios..
  * Define los componentes necesarios para la comunicación entre servicios.
  */
 @Configuration
