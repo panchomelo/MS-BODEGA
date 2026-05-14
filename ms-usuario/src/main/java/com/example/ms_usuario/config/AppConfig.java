@@ -13,7 +13,7 @@ public class AppConfig {
 
     /**
      * Define el Bean de WebClient para la comunicación remota.
-     * Mantiene la consistencia con la arquitectura del sistema de bodega [1-4].
+     * Mantiene la consistencia con la arquitectura del sistema de bodegas.
      */
     @Bean
     public WebClient webClient() {
