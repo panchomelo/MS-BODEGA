@@ -8,3 +8,6 @@
 
 # Ignora archivos compilados sueltos
 *.class
+
+# Ignora todos los application.properties en cualquier ruta del repo
+**/application.properties
