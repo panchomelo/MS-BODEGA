@@ -6,9 +6,9 @@ ms.producto.url=http://localhost:8080
 ms.inventario.url=http://localhost:8082
 
 # Configuración de base de datos (Oracle Wallet)
-spring.datasource.url=jdbc:oracle:thin:@jq2igswt1161sofw_high?TNS_ADMIN=TU_RUTA_AL_WALLET
-spring.datasource.username=ADMIN
-spring.datasource.password=FullStack-001
+spring.datasource.url=XXXXXXXXXXXXX
+spring.datasource.username=XXXXXXXX
+spring.datasource.password=XXXXXXXX
 spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
 
 # JPA y Logs

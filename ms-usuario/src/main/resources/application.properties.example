@@ -5,9 +5,9 @@ spring.application.name=ms-usuario
 server.port=8081
 
 # Configuración Oracle Autonomous DB (Wallet) - Consistente con ms-producto e ms-inventario
-spring.datasource.url=jdbc:oracle:thin:@jq2igswt1161sofw_high?TNS_ADMIN=C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1/Wallet_JQ2IGSWT1161SOFW
-spring.datasource.username=ADMIN
-spring.datasource.password=FullStack-001
+spring.datasource.url=XXXXXXXXXXXXX
+spring.datasource.username=XXXXXXXX
+spring.datasource.password=XXXXXXXX
 spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
 
 # JPA y Hibernate (IE 2.1.1)
