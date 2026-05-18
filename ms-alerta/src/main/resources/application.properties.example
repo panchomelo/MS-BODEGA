@@ -20,4 +20,4 @@ logging.level.java.sql=DEBUG
 
 
 ms.producto.url=http://localhost:8080
-server.port=8084
+server.port=8088
