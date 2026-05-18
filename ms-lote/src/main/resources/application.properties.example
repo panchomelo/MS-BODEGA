@@ -1,0 +1,8 @@
+spring.datasource.url=jdbc:oracle:thin:@//<HOST>:<PORT>/<SERVICE>
+spring.datasource.username=<USER>
+spring.datasource.password=<PASSWORD>
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+ms.producto.url=http://localhost:8080
+server.port=8085
