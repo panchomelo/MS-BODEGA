@@ -1,8 +1,23 @@
-spring.datasource.url=jdbc:oracle:thin:@//<HOST>:<PORT>/<SERVICE>
-spring.datasource.username=<USER>
-spring.datasource.password=<PASSWORD>
+spring.application.name=ms-lote
+
+# Oracle Autonomous DB (Wallet)
+spring.datasource.url=XXXXXXXXXXXXX
+spring.datasource.username=XXXXXXXX
+spring.datasource.password=XXXXXXXX
+spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
+
+# JPA
 spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.OracleDialect
 spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# Logs
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+logging.level.com.zaxxer.hikari=DEBUG
+logging.level.java.sql=DEBUG
+
 
 ms.producto.url=http://localhost:8080
 server.port=8085
