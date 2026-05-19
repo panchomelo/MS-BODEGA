@@ -6,7 +6,9 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // IE 2.2.3: Asegura integridad
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import com.example.ms_inventario.dto.InventarioRequestDTO;
 import com.example.ms_inventario.dto.InventarioResponseDTO; // Requisito para errores reactivos [2]
 import com.example.ms_inventario.dto.ProductoDTO;
 import com.example.ms_inventario.model.Inventario;
@@ -14,7 +16,6 @@ import com.example.ms_inventario.repository.InventarioRepository; // Molde para 
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,21 @@ public class InventarioService {
 
     private final InventarioRepository inventarioRepository;
     private final WebClient webClient; // Inyectado desde AppConfig [5]
+
+    private void validarProducto(Long productoId) {
+        try {
+            webClient.get()
+                    .uri("/productos/{id}", productoId)
+                    .retrieve()
+                    .bodyToMono(ProductoDTO.class)
+                    .block();
+        } catch (WebClientResponseException.NotFound e) {
+            log.error("Error: Producto ID {} no existe en el sistema maestro", productoId);
+            throw new RuntimeException("Producto no encontrado");
+        } catch (Exception e) {
+            throw new RuntimeException("No se puede conectar con ms-producto: " + e.getMessage());
+        }
+    }
 
     /**
      * Actualiza el stock de un producto validando su existencia remota.
@@ -33,15 +49,7 @@ public class InventarioService {
         log.info("Iniciando actualización de stock para producto ID: {} (Cantidad: {})", productoId, cantidad);
 
         // 1. Comunicación Remota (IE 2.4.1): Validar producto en ms-producto
-        webClient.get()
-                .uri("/productos/{id}", productoId)
-                .retrieve()
-                .onStatus(status -> status.isError(), response -> {
-                    log.error("Error: Producto ID {} no existe en el sistema maestro", productoId);
-                    return Mono.error(new RuntimeException("Producto no encontrado para el movimiento"));
-                })
-                .bodyToMono(ProductoDTO.class) // Mapea la respuesta al DTO local [3]
-                .block(); // Sincroniza la validación antes de persistir
+        validarProducto(productoId);
 
         // 2. Regla simple: no permitir crear duplicados por productoId
         Optional<Inventario> existente = inventarioRepository.findByProductoId(productoId);
@@ -73,6 +81,26 @@ public class InventarioService {
         return inventarioRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .toList();
+    }
+
+    @Transactional
+    public InventarioResponseDTO guardar(InventarioRequestDTO dto) {
+        validarProducto(dto.getProductoId());
+        Inventario inventario = Inventario.builder()
+                .productoId(dto.getProductoId())
+                .stock(dto.getStock())
+                .build();
+        return mapToResponse(inventarioRepository.save(inventario));
+    }
+
+    @Transactional
+    public Optional<InventarioResponseDTO> actualizar(Long id, InventarioRequestDTO dto) {
+        return inventarioRepository.findById(id).map(existente -> {
+            validarProducto(dto.getProductoId());
+            existente.setProductoId(dto.getProductoId());
+            existente.setStock(dto.getStock());
+            return mapToResponse(inventarioRepository.save(existente));
+        });
     }
 
     private InventarioResponseDTO mapToResponse(Inventario i) {
