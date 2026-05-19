@@ -33,7 +33,7 @@ public class InventarioService {
 
         // 1. Comunicación Remota (IE 2.4.1): Validar producto en ms-producto
         webClient.get()
-                .uri("/{id}", productoId)
+                .uri("/productos/{id}", productoId)
                 .retrieve()
                 .onStatus(status -> status.isError(), response -> {
                     log.error("Error: Producto ID {} no existe en el sistema maestro", productoId);
