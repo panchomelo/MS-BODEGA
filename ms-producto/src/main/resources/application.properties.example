@@ -1,6 +1,8 @@
 spring.application.name=ms-producto
 server.port=8080
 
+ms.categoria.url=http://localhost:8083
+
 # Oracle Autonomous DB (Wallet)
 spring.datasource.url=XXXXXXXXXXXXX
 spring.datasource.username=XXXXXXXX
