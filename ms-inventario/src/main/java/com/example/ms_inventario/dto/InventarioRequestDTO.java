@@ -1,6 +1,5 @@
 package com.example.ms_inventario.dto;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +16,5 @@ public class InventarioRequestDTO {
     private Long productoId;
 
     @NotNull(message = "La cantidad de stock no puede ser nula")
-    @Min(value = 0, message = "El stock no puede ser un valor negativo")
     private Integer stock;
-    }
+}

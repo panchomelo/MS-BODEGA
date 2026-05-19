@@ -85,20 +85,51 @@ public class InventarioService {
 
     @Transactional
     public InventarioResponseDTO guardar(InventarioRequestDTO dto) {
+        // 1. Comunicación Remota (IE 2.4.1): Validar producto en ms-producto
         validarProducto(dto.getProductoId());
+
+        // 2. Regla simple: no permitir crear duplicados por productoId
+        Optional<Inventario> existente = inventarioRepository.findByProductoId(dto.getProductoId());
+        if (existente.isPresent()) {
+            log.warn("Producto ID {} ya tiene inventario registrado", dto.getProductoId());
+            throw new RuntimeException("productoId ya existe");
+        }
+
         Inventario inventario = Inventario.builder()
                 .productoId(dto.getProductoId())
-                .stock(dto.getStock())
+                .stock(0)
                 .build();
+
+        // 3. Regla de Negocio (IE 2.2.1): Validar stock insuficiente
+        int nuevoStock = inventario.getStock() + dto.getStock();
+        if (nuevoStock < 0) {
+            log.warn("Intento de rebaja fallido: Stock insuficiente para producto ID {}", dto.getProductoId());
+            throw new RuntimeException("Stock insuficiente para realizar el descuento");
+        }
+
+        inventario.setStock(nuevoStock);
         return mapToResponse(inventarioRepository.save(inventario));
     }
 
     @Transactional
     public Optional<InventarioResponseDTO> actualizar(Long id, InventarioRequestDTO dto) {
         return inventarioRepository.findById(id).map(existente -> {
+            // 1. Comunicación Remota (IE 2.4.1): Validar producto en ms-producto
             validarProducto(dto.getProductoId());
-            existente.setProductoId(dto.getProductoId());
-            existente.setStock(dto.getStock());
+
+            // 2. Regla simple: no permitir cambio de productoId
+            if (!dto.getProductoId().equals(existente.getProductoId())) {
+                throw new RuntimeException("productoId no coincide con el inventario existente");
+            }
+
+            // 3. Regla de Negocio (IE 2.2.1): Validar stock insuficiente
+            int nuevoStock = existente.getStock() + dto.getStock();
+            if (nuevoStock < 0) {
+                log.warn("Intento de rebaja fallido: Stock insuficiente para producto ID {}", dto.getProductoId());
+                throw new RuntimeException("Stock insuficiente para realizar el descuento");
+            }
+
+            existente.setStock(nuevoStock);
             return mapToResponse(inventarioRepository.save(existente));
         });
     }
