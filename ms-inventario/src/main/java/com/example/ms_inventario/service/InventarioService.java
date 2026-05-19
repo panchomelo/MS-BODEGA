@@ -1,6 +1,7 @@
 package com.example.ms_inventario.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // IE 2.2.3: Asegura integridad
@@ -42,12 +43,17 @@ public class InventarioService {
                 .bodyToMono(ProductoDTO.class) // Mapea la respuesta al DTO local [3]
                 .block(); // Sincroniza la validación antes de persistir
 
-        // 2. Lógica de Persistencia: Buscar o inicializar registro
-        Inventario inventario = inventarioRepository.findByProductoId(productoId)
-                .orElse(Inventario.builder()
-                        .productoId(productoId)
-                        .stock(0)
-                        .build());
+        // 2. Regla simple: no permitir crear duplicados por productoId
+        Optional<Inventario> existente = inventarioRepository.findByProductoId(productoId);
+        if (existente.isPresent()) {
+            log.warn("Producto ID {} ya tiene inventario registrado", productoId);
+            throw new RuntimeException("productoId ya existe");
+        }
+
+        Inventario inventario = Inventario.builder()
+                .productoId(productoId)
+                .stock(0)
+                .build();
 
         // 3. Regla de Negocio (IE 2.2.1): Validar stock insuficiente
         int nuevoStock = inventario.getStock() + cantidad;
