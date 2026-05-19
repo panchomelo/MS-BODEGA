@@ -24,9 +24,9 @@ public class ProductoService {
     private final WebClient webClient;
 
     @Transactional
-    public ProductoResponseDTO crear(ProductoRequestDTO dto){
+    public ProductoResponseDTO crear(ProductoRequestDTO dto) {
         log.info("Iniciando la creación del producto: {}", dto.getNombre());
-        
+
         validarCategoria(dto.getCategoriaId());
 
         Producto producto = Producto.builder()
@@ -37,12 +37,12 @@ public class ProductoService {
 
         Producto guardado = repository.save(producto);
         log.info("Producto guardado exitosamente con ID: {}", guardado.getId());
-        
+
         return mapToResponse(guardado);
     }
 
     @Transactional(readOnly = true)
-    public List<ProductoResponseDTO> listar(){
+    public List<ProductoResponseDTO> listar() {
         log.info("Recuperando lista completa de productos");
         return repository.findAll().stream()
                 .map(this::mapToResponse)
@@ -50,13 +50,13 @@ public class ProductoService {
     }
 
     @Transactional(readOnly = true)
-    public ProductoResponseDTO obtenerPorId(Long id){
+    public ProductoResponseDTO obtenerPorId(Long id) {
         log.info("Buscando producto con ID: {}", id);
         return mapToResponse(buscarProducto(id));
     }
 
     @Transactional
-    public ProductoResponseDTO actualizar(Long id, ProductoRequestDTO dto){
+    public ProductoResponseDTO actualizar(Long id, ProductoRequestDTO dto) {
         log.info("Actualizando datos del producto ID: {}", id);
         Producto producto = buscarProducto(id);
 
@@ -68,12 +68,12 @@ public class ProductoService {
 
         Producto actualizado = repository.save(producto);
         log.info("Producto ID: {} actualizado correctamente", id);
-        
+
         return mapToResponse(actualizado);
     }
 
     @Transactional
-    public void eliminar(Long id){
+    public void eliminar(Long id) {
         log.warn("Eliminando definitivamente el producto ID: {}", id);
         Producto producto = buscarProducto(id);
         repository.delete(producto);
@@ -84,17 +84,17 @@ public class ProductoService {
     private void validarCategoria(Long categoriaId) {
         log.info("Validando existencia de categoría ID: {} en ms-categoria", categoriaId);
         webClient.get()
-                .uri("/{id}", categoriaId)
+                .uri("/categorias/{id}", categoriaId)
                 .retrieve()
                 .onStatus(status -> status.isError(), response -> {
-                log.error("Error: La categoría {} no existe en el sistema", categoriaId);
-                return Mono.error(new RuntimeException("Categoría no encontrada en el maestro de categorías"));
-})
+                    log.error("Error: La categoría {} no existe en el sistema", categoriaId);
+                    return Mono.error(new RuntimeException("Categoría no encontrada en el maestro de categorías"));
+                })
                 .bodyToMono(Object.class)
                 .block();
     }
 
-    private Producto buscarProducto(Long id){
+    private Producto buscarProducto(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Error: Producto con ID {} no encontrado", id);
@@ -102,7 +102,7 @@ public class ProductoService {
                 });
     }
 
-    private ProductoResponseDTO mapToResponse(Producto p){
+    private ProductoResponseDTO mapToResponse(Producto p) {
         return ProductoResponseDTO.builder()
                 .id(p.getId())
                 .nombre(p.getNombre())
