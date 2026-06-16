@@ -1,18 +1,13 @@
-# CONFIGURACIÓN BASE (Común para todos los entornos)
 spring:
   application:
     name: ms-producto
 
-server:
-  port: ${PORT:8080} # Usa el puerto 8080 por defecto o el asignado por la plataforma (PaaS) [5]
-
-# Configuración de Oracle Autonomous DB (Wallet)
   datasource:
-    url: XXXXXXXXXXXXX
-    username: XXXXXXXX
-    password: XXXXXXXX
+    url: jdbc:oracle:thin:@hospitalv11_high?TNS_ADMIN=C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1
+    username: producto_bodega
+    password: FullStack-001
     driver-class-name: oracle.jdbc.OracleDriver
-  
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,21 +15,21 @@ server:
       hibernate:
         dialect: org.hibernate.dialect.OracleDialect
 
-# Configuración de Logs Estructurados
+server:
+  port: ${PORT:8080}
+
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     com.zaxxer.hikari: DEBUG
 
-# Registro en Eureka (Obligatorio para Evaluación 3) [6, 7]
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
 
 ---
-# PERFIL DE DESARROLLO (Local) [4]
 spring:
   config:
     activate:
@@ -42,10 +37,9 @@ spring:
 
 ms:
   categoria:
-    url: http://localhost:8083 # URL fija para pruebas locales sin Gateway [8]
+    url: http://localhost:8083
 
 ---
-# PERFIL REMOTO (Docker / Railway / Render) [4, 5]
 spring:
   config:
     activate:
@@ -53,4 +47,4 @@ spring:
 
 ms:
   categoria:
-    url: lb://ms-categoria # Uso de rutas dinámicas a través del Gateway/Eureka [9]
+    url: lb://ms-categoria
