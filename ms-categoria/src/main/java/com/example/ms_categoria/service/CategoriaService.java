@@ -2,8 +2,9 @@ package com.example.ms_categoria.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.ms_categoria.dto.CategoriaRequestDTO;
 import com.example.ms_categoria.dto.CategoriaResponseDTO;
 import com.example.ms_categoria.model.Categoria;
@@ -19,18 +20,24 @@ public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
 
+    @Transactional(readOnly = true)
     public List<CategoriaResponseDTO> obtenerTodas() {
-        log.info("Consultando todas las categorías");
         return categoriaRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public CategoriaResponseDTO obtenerPorId(Long id) {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada con ID: " + id)); // IE 2.2.1 [8]
+        return mapToResponse(categoria);
+    }
+
+    @Transactional
     public CategoriaResponseDTO crear(CategoriaRequestDTO request) {
-        log.info("Creando nueva categoría: {}", request.getNombre());
         Categoria categoria = Categoria.builder()
                 .nombre(request.getNombre())
-                .descripcion(request.getDescripcion())
                 .build();
         
         Categoria guardada = categoriaRepository.save(categoria);
@@ -38,21 +45,11 @@ public class CategoriaService {
         return mapToResponse(guardada);
     }
 
-    public CategoriaResponseDTO obtenerPorId(Long id) {
-        log.info("Buscando categoría con ID: {}", id);
-        return categoriaRepository.findById(id)
-                .map(this::mapToResponse)
-                .orElseThrow(() -> {
-                    log.error("Error: No se encontró la categoría con ID: {}", id);
-                    return new RuntimeException("Categoría no encontrada");
-                });
-    }
-
+    // Método auxiliar de mapeo (IE 2.4.2) [7]
     private CategoriaResponseDTO mapToResponse(Categoria categoria) {
         return CategoriaResponseDTO.builder()
                 .id(categoria.getId())
                 .nombre(categoria.getNombre())
-                .descripcion(categoria.getDescripcion())
                 .build();
     }
 }
