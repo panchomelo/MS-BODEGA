@@ -30,6 +30,10 @@ eureka:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
 
 ---
+
+# =========================
+# PERFIL DEV (LOCAL)
+# =========================
 spring:
   config:
     activate:
@@ -40,6 +44,10 @@ ms:
     url: http://localhost:8083
 
 ---
+
+# =========================
+# PERFIL REMOTE (EUREKA)
+# =========================
 spring:
   config:
     activate:
