@@ -1,5 +1,10 @@
 spring.application.name=ms-reporte
 
+# Springdoc OpenAPI
+springdoc.api-docs.enabled=true
+springdoc.swagger-ui.enabled=true
+springdoc.swagger-ui.path=/doc/swagger-ui.html
+
 # Oracle Autonomous DB (Wallet)
 spring.datasource.url=XXXXXXXXXXXXX
 spring.datasource.username=XXXXXXXX
