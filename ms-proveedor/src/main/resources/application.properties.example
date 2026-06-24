@@ -1,6 +1,11 @@
 spring.application.name=ms-proveedor
 server.port=8088
 
+# Springdoc OpenAPI
+springdoc.api-docs.enabled=true
+springdoc.swagger-ui.enabled=true
+springdoc.swagger-ui.path=/doc/swagger-ui.html
+
 ms.producto.url=http://localhost:8080
 
 # Oracle Autonomous DB (Wallet)
