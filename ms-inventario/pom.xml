@@ -47,6 +47,13 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
+        <!-- SPRINGDOC OPENAPI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
         <!-- ORACLE JDBC (MISMA VERSIÓN QUE PRODUCTO) -->
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>

@@ -1,6 +1,10 @@
 spring.application.name=ms-inventario
 server.port=8082
 
+springdoc.api-docs.enabled=true
+springdoc.swagger-ui.enabled=true
+springdoc.swagger-ui.path=/doc/swagger-ui.html
+
 ms.producto.url=http://localhost:8080
 
 spring.datasource.url=XXXXXXXXXXXXX
