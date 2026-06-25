@@ -1,0 +1,55 @@
+# CONFIGURACIÓN BASE (Común para todos los entornos)
+spring:
+  application:
+    name: ms-movimiento
+  datasource:
+    url: jdbc:oracle:thin:@hospitalv11_high?TNS_ADMIN=C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1
+    username: movimiento_bodega
+    password: FullStack-001
+    driver-class-name: oracle.jdbc.OracleDriver
+  jpa:
+    hibernate:
+      dddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+
+server:
+  port: ${PORT:8081} # Requisito IE 3.3.1: Puerto dinámico
+
+# Registro en Eureka (Requisito IE 3.3.2)
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+
+# Trazabilidad y Logs (IE 2.3.1)
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.zaxxer.hikari: DEBUG
+
+---
+# PERFIL DE DESARROLLO (Local)
+spring:
+  config:
+    activate:
+      on-profile: dev
+ms:
+  producto:
+    url: http://localhost:8080 # URL directa local para ms-producto
+  inventario:
+    url: http://localhost:8082 # URL directa local para ms-inventario
+
+---
+# PERFIL REMOTO (Docker / PaaS)
+spring:
+  config:
+    activate:
+      on-profile: remote
+ms:
+  producto:
+    url: lb://ms-producto # Ruta dinámica balanceada para ms-producto (IE 3.3.3)
+  inventario:
+    url: lb://ms-inventario # Ruta dinámica balanceada para ms-inventario (IE 3.3.3)

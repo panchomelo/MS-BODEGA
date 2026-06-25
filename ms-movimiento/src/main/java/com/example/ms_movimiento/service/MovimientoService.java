@@ -1,7 +1,7 @@
 package com.example.ms_movimiento.service;
 
 import java.util.List;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,42 +24,45 @@ public class MovimientoService {
     private final MovimientoRepository movimientoRepository;
     private final WebClient webClient;
 
-    /**
-     * Registra un movimiento y orquesta la comunicación con otros microservicios.
-     */
+    @Value("${ms.producto.url:http://localhost:8080}")
+    private String productoServiceUrl;
+
+    @Value("${ms.inventario.url:http://localhost:8082}")
+    private String inventarioServiceUrl;
+
     @Transactional
     public void registrarMovimiento(MovimientoRequestDTO request) {
-        log.info("Registrando movimiento de tipo {} para producto ID: {}", request.getTipo(), request.getProductoId());
+        log.info("Iniciando orquestación de movimiento: {} para producto ID: {}", 
+                 request.getTipo(), request.getProductoId());
 
-        // 1. Validar producto en ms-producto (IE 2.4.1)
+        // 1. Validar producto
         webClient.get()
-                .uri("http://localhost:8080/productos/{id}", request.getProductoId())
+                .uri(productoServiceUrl + "/productos/{id}", request.getProductoId())
                 .retrieve()
                 .onStatus(status -> status.isError(), response ->
-                    Mono.error(new RuntimeException("Producto no existe")))
+                    Mono.error(new RuntimeException("Error: El producto con ID " + request.getProductoId() + " no existe")))
                 .bodyToMono(Object.class)
                 .block();
 
-        // 2. Lógica para evitar "Unboxing possibly null value"
-        Integer cantidadOriginal = request.getCantidad();
-        int cantidadLimpia = (cantidadOriginal != null) ? cantidadOriginal : 0;
+        // 2. Lógica de cálculo
+        int cantidadLimpia = (request.getCantidad() != null) ? request.getCantidad() : 0;
+        int cantidadAjuste = request.getTipo().equalsIgnoreCase("SALIDA") ? -cantidadLimpia : cantidadLimpia;
 
-        int cantidadAjuste = request.getTipo().equalsIgnoreCase("SALIDA")
-                            ? -cantidadLimpia : cantidadLimpia;
-
-        // 3. Actualizar stock en ms-inventario (Orquestación)
-        InventarioUpdateDTO updateStock = new InventarioUpdateDTO(request.getProductoId(), cantidadAjuste);
+        // 3. Actualizar stock (Usando asignación nativa para evitar líos de constructores)
+        InventarioUpdateDTO updateStock = new InventarioUpdateDTO();
+        updateStock.setProductoId(request.getProductoId());
+        updateStock.setCantidad(cantidadAjuste);
 
         webClient.post()
-                .uri("http://localhost:8082/inventario/actualizar")
+                .uri(inventarioServiceUrl + "/inventario/actualizar")
                 .bodyValue(updateStock)
                 .retrieve()
                 .onStatus(status -> status.isError(), response -> 
-                    Mono.error(new RuntimeException("Error al actualizar inventario o stock insuficiente")))
+                    Mono.error(new RuntimeException("Error crítico: Falló la actualización de inventario o stock insuficiente")))
                 .bodyToMono(Void.class)
                 .block();
 
-        // 4. Guardar el historial del movimiento
+        // 4. Guardar historial (Usando el Builder manual de respaldo que creamos)
         Movimiento movimiento = Movimiento.builder()
                 .productoId(request.getProductoId())
                 .cantidad(request.getCantidad())
@@ -67,24 +70,17 @@ public class MovimientoService {
                 .build();
         
         movimientoRepository.save(movimiento);
-        log.info("Movimiento guardado y stock actualizado correctamente");
     }
 
-    /**
-     * Método necesario para el Controller (IE 2.1.2)
-     */
     @Transactional(readOnly = true)
     public List<MovimientoResponseDTO> listarTodo() {
-        log.info("Consultando historial completo de movimientos");
         return movimientoRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
-    /**
-     * Mapeador interno de Entidad a DTO
-     */
     private MovimientoResponseDTO mapToResponse(Movimiento m) {
+        // Usando el Builder manual de respaldo que creamos
         return MovimientoResponseDTO.builder()
                 .id(m.getId())
                 .productoId(m.getProductoId())
