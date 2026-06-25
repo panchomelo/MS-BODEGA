@@ -1,6 +1,7 @@
 package com.example.ms_movimiento.service;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,55 +33,62 @@ public class MovimientoService {
 
     @Transactional
     public void registrarMovimiento(MovimientoRequestDTO request) {
-        log.info("Iniciando orquestación de movimiento: {} para producto ID: {}", 
-                 request.getTipo(), request.getProductoId());
 
-        // 1. Validar producto
+        log.info("Registrando movimiento: {} para producto {}", 
+                request.getTipo(), request.getProductoId());
+
+        // 1. VALIDAR PRODUCTO EN MS-PRODUCTO
         webClient.get()
                 .uri(productoServiceUrl + "/productos/{id}", request.getProductoId())
                 .retrieve()
-                .onStatus(status -> status.isError(), response ->
-                    Mono.error(new RuntimeException("Error: El producto con ID " + request.getProductoId() + " no existe")))
-                .bodyToMono(Object.class)
+                .onStatus(status -> status.isError(),
+                        response -> Mono.error(new RuntimeException("Producto no existe")))
+                .bodyToMono(String.class)
                 .block();
 
-        // 2. Lógica de cálculo
-        int cantidadLimpia = (request.getCantidad() != null) ? request.getCantidad() : 0;
-        int cantidadAjuste = request.getTipo().equalsIgnoreCase("SALIDA") ? -cantidadLimpia : cantidadLimpia;
+        // 2. CALCULAR AJUSTE DE STOCK
+        int cantidad = request.getCantidad();
 
-        // 3. Actualizar stock (Usando asignación nativa para evitar líos de constructores)
-        InventarioUpdateDTO updateStock = new InventarioUpdateDTO();
-        updateStock.setProductoId(request.getProductoId());
-        updateStock.setCantidad(cantidadAjuste);
+        int ajuste = "SALIDA".equalsIgnoreCase(request.getTipo())
+                ? -cantidad
+                : cantidad;
+
+        // 3. ACTUALIZAR INVENTARIO EN MS-INVENTARIO
+        InventarioUpdateDTO dto = new InventarioUpdateDTO(
+                request.getProductoId(),
+                ajuste
+        );
 
         webClient.post()
                 .uri(inventarioServiceUrl + "/inventario/actualizar")
-                .bodyValue(updateStock)
+                .bodyValue(dto)
                 .retrieve()
-                .onStatus(status -> status.isError(), response -> 
-                    Mono.error(new RuntimeException("Error crítico: Falló la actualización de inventario o stock insuficiente")))
+                .onStatus(status -> status.isError(),
+                        response -> Mono.error(new RuntimeException("Error al actualizar inventario")))
                 .bodyToMono(Void.class)
                 .block();
 
-        // 4. Guardar historial (Usando el Builder manual de respaldo que creamos)
+        // 4. GUARDAR MOVIMIENTO EN BD LOCAL
         Movimiento movimiento = Movimiento.builder()
                 .productoId(request.getProductoId())
                 .cantidad(request.getCantidad())
                 .tipo(request.getTipo().toUpperCase())
                 .build();
-        
+
         movimientoRepository.save(movimiento);
     }
 
+    // ===================== LISTAR MOVIMIENTOS =====================
+
     @Transactional(readOnly = true)
     public List<MovimientoResponseDTO> listarTodo() {
-        return movimientoRepository.findAll().stream()
-                .map(this::mapToResponse)
+        return movimientoRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
                 .toList();
     }
 
-    private MovimientoResponseDTO mapToResponse(Movimiento m) {
-        // Usando el Builder manual de respaldo que creamos
+    private MovimientoResponseDTO mapToDTO(Movimiento m) {
         return MovimientoResponseDTO.builder()
                 .id(m.getId())
                 .productoId(m.getProductoId())

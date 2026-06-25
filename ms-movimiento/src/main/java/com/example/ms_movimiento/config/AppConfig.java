@@ -7,13 +7,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class AppConfig {
 
-    /**
-     * Define el Bean de WebClient para la comunicación entre microservicios.
-     * Este componente será inyectado en MovimientoService para validar 
-     * productos y actualizar el stock (IE 2.4.1).
-     */
     @Bean
-    public WebClient webClient() {
-        return WebClient.builder().build();
+    public WebClient webClient(WebClient.Builder builder) {
+        return builder.build();
     }
 }

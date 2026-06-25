@@ -1,40 +1,51 @@
-# CONFIGURACIÓN BASE (Común)
 spring:
   application:
-    name: ms-categoria
+    name: ms-movimiento
+
+  profiles:
+    active: dev
+
   datasource:
     url: jdbc:oracle:thin:@hospitalv11_high?TNS_ADMIN=C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1
-    username: categoria_bodega
+    username: movimiento_bodega
     password: FullStack-001
     driver-class-name: oracle.jdbc.OracleDriver
+
+    hikari:
+      maximum-pool-size: 10
+      data-source-properties:
+        oracle.net.tns_admin: C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1
+        oracle.net.wallet_location: C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1
+        oracle.net.ssl_server_dn_match: false
+
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.OracleDialect
+        format_sql: true
 
 server:
-  port: ${PORT:8083} # Requisito IE 3.3.1 [10]
+  port: 8083
 
-# Registro en Eureka (Requisito IE 3.3.2) [7, 12]
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+      defaultZone: http://localhost:8761/eureka/
 
 logging:
   level:
     org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     com.zaxxer.hikari: DEBUG
 
 ---
-# PERFIL DE DESARROLLO (Local) [9]
+
 spring:
   config:
     activate:
       on-profile: dev
+
 ms:
   producto:
     url: http://localhost:8080
@@ -42,13 +53,14 @@ ms:
     url: http://localhost:8082
 
 ---
-# PERFIL REMOTO (Docker / PaaS) [8, 9]
+
 spring:
   config:
     activate:
       on-profile: remote
+
 ms:
   producto:
-    url: lb://ms-producto # Ruta dinámica vía Gateway/Eureka [13]
+    url: lb://ms-producto
   inventario:
-    url: lb://ms-inventario # Ruta dinámica vía Gateway/Eureka [13]
+    url: lb://ms-inventario

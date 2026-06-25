@@ -4,7 +4,7 @@ spring:
     name: ms-usuario
   datasource:
     # Configuración de Oracle Autonomous DB (Wallet)
-    url: XXXXXX
+    url: jdbc:oracle:thin:@hospitalv11_high?TNS_ADMIN=C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1
     username: usuario_bodega
     password: FullStack-001
     driver-class-name: oracle.jdbc.OracleDriver
