@@ -1,0 +1,49 @@
+# CONFIGURACIÓN BASE (Común para todos los entornos)
+spring:
+  application:
+    name: ms-usuario
+  datasource:
+    # Configuración de Oracle Autonomous DB (Wallet)
+    url: XXXXXX
+    username: usuario_bodega
+    password: FullStack-001
+    driver-class-name: oracle.jdbc.OracleDriver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+
+server:
+  # IE 3.3.1: Puerto dinámico. Usa el 8081 por defecto o el asignado por la nube (PaaS) [5, 6]
+  port: ${PORT:8081}
+
+# Registro en Eureka (Obligatorio para Evaluación 3) [4, 7]
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+
+# Configuración de Logs para Trazabilidad y Debugging (IE 2.3.2) [6]
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    com.example.ms_usuario: DEBUG
+    com.zaxxer.hikari: DEBUG
+
+---
+# PERFIL DE DESARROLLO (Local) [2, 4]
+spring:
+  config:
+    activate:
+      on-profile: dev
+# Aquí puedes añadir URLs fijas de localhost si necesitas comunicarte con otros servicios en pruebas locales
+
+---
+# PERFIL REMOTO (Docker / Railway / Render) [2, 4, 8]
+spring:
+  config:
+    activate:
+      on-profile: remote
+# Aquí se deben usar rutas dinámicas vía lb:// para interoperabilidad mediante el Gateway [9, 10]

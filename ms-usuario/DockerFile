@@ -1,0 +1,17 @@
+# Paso 1: Imagen base ligera de Java 17 (Recomendación profesional IE 3.3.1)
+# Se utiliza la versión Alpine para reducir el tamaño y mejorar la seguridad [3, 4]
+FROM eclipse-temurin:17-jdk-alpine
+
+# Paso 2: Directorio de trabajo dentro del contenedor
+WORKDIR /app
+
+# Paso 3: Copiar el archivo JAR generado por Maven al contenedor
+# Requisito: Haber ejecutado 'mvn clean package' previamente [4]
+COPY target/*.jar app.jar
+
+# Paso 4: Exponer el puerto en el que corre el microservicio
+# Basado en tu configuración previa, ms-usuario utiliza el puerto 8081 [4]
+EXPOSE 8081
+
+# Paso 5: Comando para ejecutar la aplicación al iniciar el contenedor
+ENTRYPOINT ["java", "-jar", "app.jar"]
