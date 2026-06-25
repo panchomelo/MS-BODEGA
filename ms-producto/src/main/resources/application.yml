@@ -15,6 +15,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.OracleDialect
 
+  # 🔥 IMPORTANTE: evita error si no activas perfil
+  profiles:
+    active: dev
+
 server:
   port: ${PORT:8080}
 
@@ -29,11 +33,10 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
 
----
-
 # =========================
 # PERFIL DEV (LOCAL)
 # =========================
+---
 spring:
   config:
     activate:
@@ -43,11 +46,10 @@ ms:
   categoria:
     url: http://localhost:8083
 
----
-
 # =========================
 # PERFIL REMOTE (EUREKA)
 # =========================
+---
 spring:
   config:
     activate:
