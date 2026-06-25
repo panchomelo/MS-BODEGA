@@ -3,6 +3,8 @@ package com.example.ms_reporte.controller;
 import com.example.ms_reporte.dto.ReporteRequestDTO;
 import com.example.ms_reporte.dto.ReporteResponseDTO;
 import com.example.ms_reporte.service.ReporteService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,18 +15,21 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/reportes")
+@Tag(name = "Reportes", description = "Operaciones para gestionar reportes de la bodega")
 @RequiredArgsConstructor
 @Slf4j
 public class ReporteController {
 
     private final ReporteService reporteService;
 
+    @Operation(summary = "Listar reportes", description = "Obtiene todos los reportes registrados en el sistema")
     @GetMapping
     public ResponseEntity<List<ReporteResponseDTO>> listar() {
         log.info("Solicitando lista completa de reportes");
         return ResponseEntity.ok(reporteService.listar());
     }
 
+    @Operation(summary = "Obtener reporte por ID", description = "Recupera un reporte específico usando su identificador")
     @GetMapping("/{id}")
     public ResponseEntity<ReporteResponseDTO> obtener(@PathVariable Long id) {
         log.info("Buscando reporte ID: {}", id);
@@ -33,6 +38,7 @@ public class ReporteController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Crear reporte", description = "Registra un nuevo reporte en el sistema")
     @PostMapping
     public ResponseEntity<ReporteResponseDTO> crear(@Valid @RequestBody ReporteRequestDTO dto) {
         log.info("Creando reporte tipo: {}", dto.getTipoReporte());
@@ -40,6 +46,7 @@ public class ReporteController {
                 .body(reporteService.crear(dto));
     }
 
+    @Operation(summary = "Actualizar reporte", description = "Actualiza un reporte existente por su ID")
     @PutMapping("/{id}")
     public ResponseEntity<ReporteResponseDTO> actualizar(
             @PathVariable Long id,
@@ -50,6 +57,7 @@ public class ReporteController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Eliminar reporte", description = "Elimina un reporte por su ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         log.info("Eliminando reporte ID: {}", id);
