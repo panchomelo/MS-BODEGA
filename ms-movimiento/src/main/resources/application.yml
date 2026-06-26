@@ -27,7 +27,7 @@ spring:
         format_sql: true
 
 server:
-  port: 8083
+  port: 8084
 
 eureka:
   client:

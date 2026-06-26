@@ -26,8 +26,7 @@ import com.example.ms_movimiento.repository.MovimientoRepository;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings({ "rawtypes", "unchecked" })
-public class MovimientoServiceTest {
+class MovimientoServiceTest {
 
     @Mock
     private MovimientoRepository movimientoRepository;
@@ -35,55 +34,54 @@ public class MovimientoServiceTest {
     @Mock
     private WebClient webClient;
 
+    @Mock private WebClient.RequestHeadersUriSpec requestHeadersUriSpec;
+    @Mock private WebClient.RequestBodyUriSpec requestBodyUriSpec;
+    @Mock private WebClient.RequestBodySpec requestBodySpec;
+    @Mock private WebClient.RequestHeadersSpec requestHeadersSpec;
+    @Mock private WebClient.ResponseSpec responseSpec;
+
     @InjectMocks
     private MovimientoService movimientoService;
 
-    @Mock
-    private WebClient.RequestHeadersUriSpec requestHeadersUriSpec;
-    @Mock
-    private WebClient.RequestBodyUriSpec requestBodyUriSpec;
-    @Mock
-    private WebClient.RequestBodySpec requestBodySpec;
-    @Mock
-    private WebClient.RequestHeadersSpec requestHeadersSpec;
-    @Mock
-    private WebClient.ResponseSpec responseSpec;
-
-    @BeforeEach
-    void setUp() {}
-
     @Test
-    @DisplayName("IE 3.1.1: Debería registrar un movimiento exitosamente (Camino Feliz)")
     void registrarMovimientoExitoso() {
+
         MovimientoRequestDTO request = MovimientoRequestDTO.builder()
                 .productoId(1L)
                 .cantidad(10)
                 .tipo("ENTRADA")
                 .build();
 
-        // Mock para el GET (Validación de Producto)
+        // ===== GET PRODUCTO =====
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(anyString(), anyLong())).thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.onStatus(any(Predicate.class), any(Function.class))).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(Object.class)).thenReturn(Mono.just(new Object()));
 
-        // Mock para el POST (Actualización de Inventario)
+        when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(String.class))
+                .thenReturn(Mono.just("OK"));
+
+        // ===== POST INVENTARIO =====
         when(webClient.post()).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
         when(requestBodySpec.bodyValue(any())).thenReturn(requestHeadersSpec);
-        // Nota: requestHeadersSpec.retrieve() y responseSpec.onStatus ya están cubiertos arriba
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
 
-        when(responseSpec.bodyToMono(Void.class)).thenReturn(Mono.empty());
+        when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(Void.class))
+                .thenReturn(Mono.empty());
 
+        // EXECUTE
         movimientoService.registrarMovimiento(request);
 
-        verify(movimientoRepository, times(1)).save(any(Movimiento.class));
+        // VERIFY
+        verify(movimientoRepository, times(1))
+                .save(any(Movimiento.class));
     }
 
     @Test
-    @DisplayName("IE 3.1.1: Debería lanzar excepción si el producto no existe")
     void registrarMovimientoErrorProducto() {
+
         MovimientoRequestDTO request = MovimientoRequestDTO.builder()
                 .productoId(99L)
                 .cantidad(5)
@@ -93,12 +91,13 @@ public class MovimientoServiceTest {
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(anyString(), anyLong())).thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.onStatus(any(Predicate.class), any(Function.class))).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(Object.class)).thenReturn(Mono.error(new RuntimeException("Error: El producto con ID 99 no existe")));
 
-        assertThrows(RuntimeException.class, () -> {
-            movimientoService.registrarMovimiento(request);
-        });
+        when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(String.class))
+                .thenReturn(Mono.error(new RuntimeException("Producto no existe")));
+
+        assertThrows(RuntimeException.class,
+                () -> movimientoService.registrarMovimiento(request));
 
         verify(movimientoRepository, never()).save(any());
     }
