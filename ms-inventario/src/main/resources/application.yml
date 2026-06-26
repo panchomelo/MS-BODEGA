@@ -1,0 +1,43 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: ms-inventario
+
+  datasource:
+    url: ${JDBC_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+
+# Configuración de OpenAPI / Swagger
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /doc/swagger-ui.html
+
+# Niveles de Logs para Debug
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+    com:
+      zaxxer:
+        hikari: DEBUG
+
+# Comunicación con otros Microservicios
+ms:
+  producto:
+    # En tu PC usará localhost:8080 por defecto, en Render inyectarás la URL real
+    url: ${MS_PRODUCTO_URL:http://localhost:8080}
