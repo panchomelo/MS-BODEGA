@@ -37,7 +37,7 @@ spring:
       on-profile: dev
 ms:
   producto:
-    url: http://localhost:8080
+    url: http://localhost:8089
   inventario:
     url: http://localhost:8082
 

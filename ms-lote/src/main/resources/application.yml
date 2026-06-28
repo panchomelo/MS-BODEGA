@@ -49,7 +49,7 @@ spring:
       on-profile: dev
 ms:
   producto:
-    url: http://localhost:8080
+    url: http://localhost:8089
 
 # =========================
 # PERFIL REMOTE (EUREKA)

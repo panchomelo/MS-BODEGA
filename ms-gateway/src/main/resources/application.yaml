@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: ms-gateway
+  
+  cloud:
+    gateway:
+      routes:
+        # 1. Alerta
+        - id: ms-alerta-route
+          uri: lb://ms-alerta
+          predicates:
+            - Path=/alertas/**
+
+        # 2. Auditoría
+        - id: ms-auditoria-route
+          uri: lb://ms-auditoria
+          predicates:
+            - Path=/auditorias/**
+
+        # 3. Categoría
+        - id: ms-categoria-route
+          uri: lb://ms-categoria
+          predicates:
+            - Path=/categorias/**
+
+        # 4. Inventario
+        - id: ms-inventario-route
+          uri: lb://ms-inventario
+          predicates:
+            - Path=/inventarios/**
+
+        # 5. Lote
+        - id: ms-lote-route
+          uri: lb://ms-lote
+          predicates:
+            - Path=/lotes/**
+
+        # 6. Movimiento
+        - id: ms-movimiento-route
+          uri: lb://ms-movimiento
+          predicates:
+            - Path=/movimientos/**
+
+        # 7. Producto (Limpio y directo)
+        - id: ms-producto-route
+          uri: lb://ms-producto
+          predicates:
+            - Path=/productos/**
+
+        # 8. Proveedor
+        - id: ms-proveedor-route
+          uri: lb://ms-proveedor
+          predicates:
+            - Path=/proveedores/**
+
+        # 9. Reporte
+        - id: ms-reporte-route
+          uri: lb://ms-reporte
+          predicates:
+            - Path=/reportes/**
+
+        # 10. Usuario
+        - id: ms-usuario-route
+          uri: lb://ms-usuario
+          predicates:
+            - Path=/usuarios/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
