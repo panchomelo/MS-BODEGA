@@ -3,9 +3,9 @@ spring:
   application:
     name: ms-categoria
   datasource:
-    url: jdbc:oracle:thin:@hospitalv11_high?TNS_ADMIN=C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1
-    username: categoria_bodega
-    password: FullStack-001
+    url: ${JDBC_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: oracle.jdbc.OracleDriver
   jpa:
     hibernate:
@@ -37,9 +37,9 @@ spring:
       on-profile: dev
 ms:
   producto:
-    url: http://localhost:8089
+    url: ${MS_PRODUCTO_URL}
   inventario:
-    url: http://localhost:8082
+    url: ${MS_INVENTARIO_URL}
 
 ---
 # PERFIL REMOTO (Docker / PaaS) [8, 9]

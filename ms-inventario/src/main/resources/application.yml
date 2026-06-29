@@ -40,4 +40,4 @@ logging:
 ms:
   producto:
     # En tu PC usará localhost:8080 por defecto, en Render inyectarás la URL real
-    url: ${MS_PRODUCTO_URL:http://localhost:8089}
+    url: ${MS_PRODUCTO_URL}

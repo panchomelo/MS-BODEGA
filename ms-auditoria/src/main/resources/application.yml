@@ -48,4 +48,4 @@ logging:
 ms:
   usuario:
     # En Render cambiarás esto por la URL interna o pública del ms-usuario
-    url: ${MS_USUARIO_URL:http://localhost:8081}
+    url: ${MS_USUARIO_URL}

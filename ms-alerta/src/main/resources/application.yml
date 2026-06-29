@@ -47,4 +47,4 @@ logging:
 ms:
   producto:
     # En Render cambiarás esto por la URL interna o pública del ms-producto
-    url: ${MS_PRODUCTO_URL:http://localhost:8089}
+    url: ${MS_PRODUCTO_URL}

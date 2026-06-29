@@ -11,3 +11,6 @@
 
 # Ignora todos los application.properties en cualquier ruta del repo
 **/application.properties
+
+#Ignora los env
+**/.env

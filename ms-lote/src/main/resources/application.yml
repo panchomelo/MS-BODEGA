@@ -3,14 +3,13 @@ spring:
   application:
     name: ms-lote
   
-  # 🔥 Corregido: Al mismo nivel que application y datasource
   profiles:
     active: dev
 
   datasource:
-    url: jdbc:oracle:thin:@hospitalv11_high?TNS_ADMIN=C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1
-    username: lote_bodega
-    password: FullStack-001
+    url: ${JDBC_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: oracle.jdbc.OracleDriver
 
   jpa:
@@ -49,7 +48,7 @@ spring:
       on-profile: dev
 ms:
   producto:
-    url: http://localhost:8089
+    url: ${MS_PRODUCTO_URL}
 
 # =========================
 # PERFIL REMOTE (EUREKA)
