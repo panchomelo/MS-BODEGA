@@ -1,37 +1,43 @@
+# CONFIGURACIÓN BASE (Común para todos los entornos)
 spring:
   application:
-    name: ms-producto
+    name: ms-lote
+  
+  # 🔥 Corregido: Al mismo nivel que application y datasource
+  profiles:
+    active: dev
 
   datasource:
     url: jdbc:oracle:thin:@hospitalv11_high?TNS_ADMIN=C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1
-    username: producto_bodega
+    username: lote_bodega
     password: FullStack-001
     driver-class-name: oracle.jdbc.OracleDriver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none # 🔥 Cambiado a none para evitar bloqueos DDL
+    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.OracleDialect
-
-  # 🔥 IMPORTANTE: evita error si no activas perfil
-  profiles:
-    active: dev
+        format_sql: true
 
 server:
-  port: ${PORT:8089}
+  port: ${PORT:8085}
 
+# Registro en Eureka
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+
+# Trazabilidad técnica
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     com.zaxxer.hikari: DEBUG
-
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+    java.sql: DEBUG
 
 # =========================
 # PERFIL DEV (LOCAL)
@@ -41,10 +47,9 @@ spring:
   config:
     activate:
       on-profile: dev
-
 ms:
-  categoria:
-    url: http://localhost:8083
+  producto:
+    url: http://localhost:8089
 
 # =========================
 # PERFIL REMOTE (EUREKA)
@@ -54,7 +59,6 @@ spring:
   config:
     activate:
       on-profile: remote
-
 ms:
-  categoria:
-    url: lb://ms-categoria
+  producto:
+    url: lb://ms-producto

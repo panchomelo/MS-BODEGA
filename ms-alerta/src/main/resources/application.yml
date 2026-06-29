@@ -1,5 +1,5 @@
 server:
-  port: 8088
+  port: 8090
 
 spring:
   application:
@@ -47,4 +47,4 @@ logging:
 ms:
   producto:
     # En Render cambiarás esto por la URL interna o pública del ms-producto
-    url: ${MS_PRODUCTO_URL:http://localhost:8080}
+    url: ${MS_PRODUCTO_URL:http://localhost:8089}
