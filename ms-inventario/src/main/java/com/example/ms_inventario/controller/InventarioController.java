@@ -22,7 +22,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/inventario")
+@RequestMapping({"/inventario", "/inventarios"})
 @Tag(name = "Inventario", description = "Operaciones para gestionar el inventario de productos en bodega")
 @RequiredArgsConstructor
 public class InventarioController {
