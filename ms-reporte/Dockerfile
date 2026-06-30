@@ -1,18 +1,18 @@
-# Paso 1: Compilación automática en los servidores de Render
+# Paso 1: Compilacion
 FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
 COPY . .
-# Compila el JAR saltándose los tests para que el despliegue sea rápido
 RUN mvn clean package -DskipTests
 
-# Paso 2: Imagen base ligera de Java 17 para ejecución
-FROM eclipse-temurin:17-jdk-alpine
+# Paso 2: Ejecucion
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# Copia el archivo JAR generado en la etapa anterior
+# Copia el JAR compilado desde la etapa "build"
 COPY --from=build /app/target/*.jar /app/app.jar
 
-# Puerto estándar que Render espera internamente (8080)
-EXPOSE 8080
+# Copia la carpeta wallet desde la etapa "build"
+COPY --from=build /app/src/main/resources/wallet /app/wallet
 
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -1,5 +1,5 @@
 server:
-  port: 8088
+  port: ${PORT:8088}
 
 spring:
   application:
@@ -10,6 +10,9 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      data-source-properties:
+        oracle.net.authentication_services: "()"
 
   jpa:
     hibernate:
@@ -48,4 +51,11 @@ logging:
 ms:
   producto:
     # Por defecto usa localhost:8080 en tu máquina, en Render inyectarás la URL de producción
-    url: ${MS_PRODUCTO_URL}
+    url: ${MS_PRODUCTO_URL:http://localhost:8080}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://ms-eureka-con:8761/eureka/}
+  instance:
+    prefer-ip-address: true
