@@ -1,9 +1,14 @@
 server:
-  port: 8761
+  port: ${PORT:8761}
+
+spring:
+  application:
+    name: ms-eureka
 
 eureka:
   instance:
-    hostname: localhost
+    # En la nube usa la IP o el nombre del contenedor en vez de localhost
+    hostname: ${EUREKA_HOSTNAME:localhost}
   client:
     register-with-eureka: false
     fetch-registry: false

@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "usuarios") // Sigue el estándar de nombres en plural como en 'categorias' [1] y 'movimientos' [4]
+@Table(name = "USUARIOS") // Sigue el estándar de nombres en plural como en 'categorias' [1] y 'movimientos' [4]
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

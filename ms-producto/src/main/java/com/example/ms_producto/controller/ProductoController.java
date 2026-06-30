@@ -1,6 +1,8 @@
 package com.example.ms_producto.controller;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,18 +17,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/productos")
-@RequiredArgsConstructor
-@Slf4j
 // @Tag agrupa los endpoints en la interfaz de Swagger [1], [2]
 @Tag(name = "Gestión de Productos", description = "Endpoints para realizar operaciones CRUD sobre los productos de la bodega")
 public class ProductoController {
 
+    private static final Logger log = LoggerFactory.getLogger(ProductoController.class);
+
     private final ProductoService service;
+
+    public ProductoController(ProductoService service) {
+        this.service = service;
+    }
 
     @PostMapping
     @Operation(summary = "Crear un nuevo producto", description = "Registra un producto en Oracle Cloud previa validación remota de categoría")

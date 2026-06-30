@@ -1,13 +1,16 @@
 spring:
   application:
-    name: ms-producto
-
+    name: ms-producto  # <-- CORREGIDO: Esto es lo que verá Eureka
   datasource:
     url: ${JDBC_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: oracle.jdbc.OracleDriver
-
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 5
+      data-source-properties:
+        oracle.net.authentication_services: "()"
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,45 +18,30 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.OracleDialect
 
-  profiles:
-    active: dev
-
 server:
   port: ${PORT:8089}
+
+ms:
+  categoria:
+    url: ${MS_CATEGORIA_URL:lb://ms-categoria}
 
 logging:
   level:
     org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     com.zaxxer.hikari: DEBUG
 
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+      defaultZone: ${EUREKA_URL:http://ms-eureka-con:8761/eureka/}
+  instance:
+    prefer-ip-address: true  # <-- CRÍTICO: Para que el Gateway encuentre la IP en Docker
 
-# =========================
-# PERFIL DEV (LOCAL)
-# =========================
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-
-ms:
-  categoria:
-    url: ${MS_CATEGORIA_URL}
-
-# =========================
-# PERFIL REMOTE (EUREKA)
-# =========================
 ---
 spring:
   config:
     activate:
       on-profile: remote
-
 ms:
   categoria:
     url: lb://ms-categoria

@@ -7,9 +7,15 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 5
+      # Propiedades críticas para que el driver use seguridad pura de Java (evita el freeze en Docker)
+      data-source-properties:
+        oracle.net.authentication_services: "()"
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.OracleDialect
@@ -37,7 +43,6 @@ spring:
   config:
     activate:
       on-profile: dev
-# Aquí puedes añadir URLs fijas de localhost si necesitas comunicarte con otros servicios en pruebas locales
 
 ---
 # PERFIL REMOTO (Docker / Railway / Render) [2, 4, 8]
@@ -45,4 +50,3 @@ spring:
   config:
     activate:
       on-profile: remote
-# Aquí se deben usar rutas dinámicas vía lb:// para interoperabilidad mediante el Gateway [9, 10]

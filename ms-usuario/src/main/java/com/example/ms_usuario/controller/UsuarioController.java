@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/USUARIOS")
 @RequiredArgsConstructor
 @Slf4j
 // @Tag agrupa los endpoints bajo un nombre y descripción en la UI de Swagger [2, 5]
