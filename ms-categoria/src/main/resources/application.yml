@@ -7,6 +7,9 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      data-source-properties:
+        oracle.net.authentication_services: "()"
   jpa:
     hibernate:
       ddl-auto: update
@@ -21,7 +24,9 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+      defaultZone: ${EUREKA_URL:http://ms-eureka-con:8761/eureka/}
+  instance:
+    prefer-ip-address: true
 
 logging:
   level:
