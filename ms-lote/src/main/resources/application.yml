@@ -21,6 +21,10 @@ spring:
         dialect: org.hibernate.dialect.OracleDialect
         format_sql: true
 
+ms:
+  producto:
+    url: ${MS_PRODUCTO_URL:lb://ms-producto}
+
 server:
   port: ${PORT:8085}
 
@@ -39,6 +43,7 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     com.zaxxer.hikari: DEBUG
     java.sql: DEBUG
+
 
 # =========================
 # PERFIL DEV (LOCAL)

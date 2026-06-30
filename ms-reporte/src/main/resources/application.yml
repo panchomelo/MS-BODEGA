@@ -51,7 +51,7 @@ logging:
 ms:
   usuario:
     # En tu máquina usará localhost:8081 por defecto, en Render inyectarás la URL de producción
-    url: ${MS_USUARIO_URL:http://localhost:8080}
+    url: ${MS_USUARIO_URL:lb://ms-usuario}
 
 eureka:
   client:

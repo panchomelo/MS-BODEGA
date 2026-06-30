@@ -37,12 +37,11 @@ logging:
 
 ms:
   producto:
-    url: ${MS_PRODUCTO_URL:http://localhost:8080}
+    url: ${MS_PRODUCTO_URL:lb://ms-producto}
   inventario:
-    url: ${MS_INVENTARIO_URL:http://localhost:8082}
+    url: ${MS_INVENTARIO_URL:lb://ms-inventario}
 
 ---
-
 spring:
   config:
     activate:
