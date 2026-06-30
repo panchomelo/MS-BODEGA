@@ -2,15 +2,11 @@ spring:
   application:
     name: ms-movimiento
 
-  profiles:
-    active: dev
-
   datasource:
     url: ${JDBC_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: oracle.jdbc.OracleDriver
-
     hikari:
       maximum-pool-size: 10
       data-source-properties:
@@ -38,13 +34,6 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     com.zaxxer.hikari: DEBUG
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: dev
 
 ms:
   producto:
