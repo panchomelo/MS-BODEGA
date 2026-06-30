@@ -11,10 +11,13 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      data-source-properties:
+        oracle.net.authentication_services: "()"
 
   jpa:
     hibernate:
-      ddl-auto: none # 🔥 Cambiado a none para evitar bloqueos DDL
+      ddl-auto: ${JPA_DDL_AUTO:update}
     show-sql: true
     properties:
       hibernate:
@@ -28,7 +31,9 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+      defaultZone: ${EUREKA_URL:http://ms-eureka-con:8761/eureka/}
+  instance:
+    prefer-ip-address: true
 
 # Trazabilidad técnica
 logging:
@@ -48,7 +53,7 @@ spring:
       on-profile: dev
 ms:
   producto:
-    url: ${MS_PRODUCTO_URL}
+    url: ${MS_PRODUCTO_URL:http://localhost:8080}
 
 # =========================
 # PERFIL REMOTE (EUREKA)

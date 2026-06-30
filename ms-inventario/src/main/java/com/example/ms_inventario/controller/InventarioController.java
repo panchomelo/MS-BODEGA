@@ -44,6 +44,13 @@ public class InventarioController {
                 .body(inventarioService.guardar(dto));
     }
 
+    @Operation(summary = "Ajustar stock por producto", description = "Aplica una variacion de stock en base al productoId")
+    @PostMapping("/actualizar")
+    public ResponseEntity<Void> actualizarStock(@Valid @RequestBody InventarioRequestDTO dto) {
+        inventarioService.actualizarStock(dto.getProductoId(), dto.getStock());
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "Actualizar inventario", description = "Actualiza el stock de un inventario existente por su ID")
     @PutMapping("/{id}")
     public ResponseEntity<InventarioResponseDTO> actualizar(

@@ -14,9 +14,7 @@ spring:
     hikari:
       maximum-pool-size: 10
       data-source-properties:
-        oracle.net.tns_admin: C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1
-        oracle.net.wallet_location: C:/Users/Fuyu/Desktop/Duoc/Semestre3/FullStack1
-        oracle.net.ssl_server_dn_match: false
+        oracle.net.authentication_services: "()"
 
   jpa:
     hibernate:
@@ -27,12 +25,14 @@ spring:
         format_sql: true
 
 server:
-  port: 8084
+  port: ${PORT:8084}
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL:http://ms-eureka-con:8761/eureka/}
+  instance:
+    prefer-ip-address: true
 
 logging:
   level:
@@ -48,9 +48,9 @@ spring:
 
 ms:
   producto:
-    url: ${MS_PRODUCTO_URL}
+    url: ${MS_PRODUCTO_URL:http://localhost:8080}
   inventario:
-    url: ${MS_INVENTARIO_URL}
+    url: ${MS_INVENTARIO_URL:http://localhost:8082}
 
 ---
 
