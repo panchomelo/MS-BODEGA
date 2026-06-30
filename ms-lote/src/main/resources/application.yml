@@ -2,9 +2,6 @@
 spring:
   application:
     name: ms-lote
-  
-  profiles:
-    active: dev
 
   datasource:
     url: ${JDBC_URL}
@@ -54,15 +51,3 @@ spring:
 ms:
   producto:
     url: ${MS_PRODUCTO_URL:http://localhost:8080}
-
-# =========================
-# PERFIL REMOTE (EUREKA)
-# =========================
----
-spring:
-  config:
-    activate:
-      on-profile: remote
-ms:
-  producto:
-    url: lb://ms-producto
