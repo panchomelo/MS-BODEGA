@@ -41,6 +41,19 @@ Objetivos principales:
 | ms-producto | ms-producto | 8089 |
 | ms-alerta | ms-alerta | 8090 |
 
+## Testing unitario
+
+Las pruebas unitarias del proyecto se implementaron con JUnit 5 y Mockito, especialmente en la capa de servicios.
+
+En cada microservicio se siguió un enfoque de pruebas aisladas, utilizando:
+
+- `@ExtendWith(MockitoExtension.class)` para integrar Mockito con JUnit 5.
+- `@Mock` para simular repositorios y dependencias externas.
+- `@InjectMocks` para inyectar las dependencias simuladas en la clase bajo prueba.
+- `when(...)`, `verify(...)`, `times(...)` y `never(...)` para validar el comportamiento esperado.
+
+Este enfoque permite comprobar la lógica de negocio sin depender de la base de datos ni de otros servicios, manteniendo las pruebas rápidas y deterministas.
+
 ## Rutas principales del Gateway
 
 Gateway base: http://localhost:8080
@@ -119,3 +132,10 @@ Nota: los siguientes enlaces asumen ejecución local en los puertos por defecto.
 - Eureka Dashboard: http://localhost:8761
 - Gateway activo: http://localhost:8080
 - Probar una ruta de ejemplo: http://localhost:8080/productos
+
+## Despliegue
+El proyecto se encuentra desplegado en Render.
+
+- Eureka Dashboard: https://ms-eureka-mqr7.onrender.com
+- Gateway activo: https://ms-gateway-vmnr.onrender.com
+- Probar una ruta de ejemplo: https://ms-producto-yeww.onrender.com/productos
